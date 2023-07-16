@@ -10,7 +10,12 @@ const api = {
             },
             data: params
         }),
-        update: (table, params) => axios.put(`${BASE_URL}/api/table/${table}/update`, params),
+        update: (table, params) => axios.put(`${BASE_URL}/api/table/${table}/update`, {
+            headers: {
+                "code": "OK",
+            },
+            data: params
+        }),
     },
 }
 
