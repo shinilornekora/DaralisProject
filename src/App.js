@@ -4,58 +4,73 @@ import api from './apis'
 
 function App() {
     const [currentTable, setCurrentTable] = useState('');
-    const [tableInfo, setTableInfo] = useState([]);
+    const [tableFullInfo, setTableFullInfo] = useState([]);
+    const [tablePrimaryKey, setTablePrimaryKey] = useState([]);
+    const [selectedElement, setSelectedElement] = useState({});
     useEffect( () => {
         async function fetchData() {
             try {
                 if (currentTable !== 'no-value') {
                     const result = await api.table.element(currentTable);
+                    setTableFullInfo(result.data);
                     switch(currentTable) {
                         case 'character':
-                            setTableInfo(result.data.map((e) => {
-                                console.log(e.name);
+                            setTablePrimaryKey(result.data.map((e) => {
                                 return e.name
                             }));
                             break;
                         case 'quest':
-                            setTableInfo(result.data.map((e) => {
+                            setTablePrimaryKey(result.data.map((e) => {
                                 return e.name;
                             }))
                             break;
                         case 'location':
-                            setTableInfo(result.data.map((e) => {
+                            setTablePrimaryKey(result.data.map((e) => {
                                 return e.name;
                             }))
                             break;
                         case 'item':
-                            setTableInfo(result.data.map((e) => {
+                            setTablePrimaryKey(result.data.map((e) => {
                                 return e.name;
                             }))
                             break;
                         default:
-                          setTableInfo([]);
+                          setTablePrimaryKey([]);
                     }
                 }
             } catch (error) {
                 console.log(error);
-                setTableInfo([]);
+                setTablePrimaryKey([]);
             }
         }
-        fetchData();
+        fetchData().then(r => r);
     }, [currentTable])
 
     function deleteQuery(params) {
       try {
-          api.table.delete(currentTable, params);
+          api.table.delete(currentTable, params).then(r => r);
       } catch (error) {
           console.log(error)
       }
     }
 
+    function handleSelection(primary) {
+        for (let i = 0; i < tableFullInfo.length; i++) {
+            if (tableFullInfo[i]['name'] === primary) {
+                setSelectedElement(tableFullInfo[i])
+                return;
+            }
+        }
+        setSelectedElement({});
+    }
+
   return (
       <div className="App">
            <div className="input__field">
-               <select onChange={(event) => setCurrentTable(event.target.value)} name="service" id="entities">
+               <select onChange={(event) => {
+                   setCurrentTable(event.target.value)
+                   setSelectedElement({});
+               }} name="service" id="entities">
                    <option value="no-value" defaultValue></option>
                    <option value="character">Персонажи</option>
                    <option value="quest">Задания</option>
@@ -63,13 +78,13 @@ function App() {
                    <option value="item">Вещи</option>
                </select>
                <div className="mainInfo">
-                   { tableInfo.length ?
-                       tableInfo.map((element) => {
+                   { tablePrimaryKey.length ?
+                       tablePrimaryKey.map((element) => {
                            return (
                                <div key={element} className="element__container">
                                    {element}
                                    <div className="actionButtons">
-                                       <button className="action__1">Посмотреть</button>
+                                       <button onClick={() => handleSelection(element)} className="action__1">Посмотреть</button>
                                        <button onClick={() => deleteQuery({key: element})}  className="action__2">Удалить</button>
                                    </div>
                                </div>
@@ -78,6 +93,22 @@ function App() {
                    }
                </div>
            </div>
+          { selectedElement.name ? (
+              <div className="viewItem">
+                  {Object.entries(selectedElement ?? []).map((element) =>
+                      <section className="viewItemField">
+                          <div className="viewItemFieldLabel">
+                              {JSON.stringify(element[0])}:
+                          </div>
+                          <div className="viewItemFieldValue">
+                              {JSON.stringify(element[1])}
+                          </div>
+                      </section>
+                  )
+                  }
+              </div>
+          ) : null
+          }
        </div>
   );
 }

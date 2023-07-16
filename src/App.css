@@ -4,6 +4,12 @@ select, button {
   border: 1px solid teal;
 }
 
+.App {
+  display: flex;
+  flex-direction: row;
+  gap: 200px;
+}
+
 .input__field {
   display: flex;
   flex-direction: column;
@@ -20,4 +26,26 @@ select, button {
   display: flex;
   flex-direction: row;
   gap: 20px;
+}
+
+.element__container {
+  justify-content: space-between;
+}
+
+.viewItem {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid teal;
+  gap: 20px;
+}
+
+.viewItemField {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+button:hover, select:hover {
+  cursor: pointer;
 }
