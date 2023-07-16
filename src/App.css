@@ -4,6 +4,12 @@ select, button {
   border: 1px solid teal;
 }
 
+.input__field {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .mainInfo {
   display: flex;
   flex-direction: column;
